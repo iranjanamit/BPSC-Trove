@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>June 11, 2025: Current Affairs Interactive Briefing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate & Amber Harmony -->
+    <!-- Application Structure Plan: The SPA is designed as a vertical, single-page briefing with a fixed top navigation bar for quick access to thematic sections (Bihar Special, National, Sports, etc.). This structure was chosen over mirroring the PDF's layout to provide a more intuitive and web-native user experience. It allows users to either scroll through a curated news feed or jump directly to topics of interest. Key interactions include a dynamic chart for health data and clickable cards for sports news, making information discovery engaging and efficient. This modular, thematic approach breaks down diverse news items into digestible chunks, enhancing readability and user control. -->
+    <!-- Visualization & Content Choices: 
+        - Ayushman Bharat (Bihar): Report states Bihar is #1 with 92% online OPD. Goal: Inform/Compare. Viz: Donut Chart (Chart.js/Canvas) to visually emphasize the high percentage. Interaction: Tooltip on hover. Justification: A chart provides a more impactful representation of the statistic than plain text.
+        - E-Waste Park (National): Report details a new facility. Goal: Inform. Viz: Styled HTML card with highlighted key stats (acres, tonnes). Interaction: None. Justification: Presents key data points in a scannable, clear format.
+        - ICC Hall of Fame (Sports): Report lists 7 new inductees. Goal: Organize/Inform. Viz: Grid of clickable HTML cards. Interaction: JS toggles the display of additional info on click. Justification: Encourages user engagement and presents layered information cleanly.
+        - Other News (Defense, Days, Shorts): Report gives brief updates. Goal: Inform. Viz: Themed HTML info cards/lists. Interaction: None. Justification: Simple, direct presentation is most effective for brief announcements.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 300px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700">
+
+    <div id="root">
+        <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-slate-800">June 11, 2025 Briefing</h1>
+                    </div>
+                    <nav class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="#bihar-special" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Bihar Special</a>
+                            <a href="#national" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">National</a>
+                            <a href="#sports" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Sports</a>
+                            <a href="#defense" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Defense</a>
+                            <a href="#updates" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Updates</a>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+            
+            <!-- Bihar Special Section -->
+            <section id="bihar-special" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Bihar Special: Leading Digital Health</h2>
+                <p class="text-slate-600 mb-8 max-w-3xl">This section highlights Bihar's significant achievements in public services, focusing on its top ranking in digital healthcare implementation and its leading position in maternal and newborn care. These advancements showcase the state's commitment to leveraging technology and robust systems to improve citizen well-being.</p>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold text-blue-700 mb-3">Ayushman Bharat Digital Mission</h3>
+                        <p class="mb-4">Bihar has secured the <span class="font-bold text-amber-600">#1 national rank</span> in the Ayushman Bharat Digital Mission, setting new benchmarks for accessible and efficient public health delivery. This success is driven by a state-of-the-art Command and Control Centre in Patna, which monitors health facilities in real-time.</p>
+                        <p class="text-sm text-slate-500">The system ensures prompt alerts, compliance monitoring, and proactive management of health emergencies by tracking disease trends and patient data.</p>
+                        <div class="mt-6 bg-slate-100 p-4 rounded-lg">
+                           <h4 class="font-semibold text-center text-slate-800">Online OPD Registration Rate</h4>
+                            <div class="chart-container">
+                                <canvas id="opdChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold text-blue-700 mb-3">Leader in Newborn & Maternal Care</h3>
+                        <p>According to the Poshan Tracker report from the Integrated Child Development Services (ICDS) Directorate, Bihar has achieved the <span class="font-bold text-amber-600">top position</span> nationwide for the care of newborns and pregnant women, surpassing Delhi and Uttar Pradesh.</p>
+                        <div class="mt-4 border-t border-slate-200 pt-4">
+                            <h4 class="font-semibold text-slate-800 mb-3">Bihar Rural League (BRL) 2024-25</h4>
+                            <p class="text-sm">The Bihar Cricket Association (BCA) has launched the Bihar Rural League (BRL) with the ambitious goal of discovering and nurturing cricketing talent from every village in the state, promoting sports at the grassroots level.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- National Section -->
+            <section id="national" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">National Initiatives</h2>
+                 <p class="text-slate-600 mb-8 max-w-3xl">This area covers significant national projects aimed at sustainable development and economic growth. Discover India's first E-Waste Eco Park, a major step towards a circular economy, and the 'Ayush Nivesh Saarthi' portal, designed to attract global investment into India's traditional wellness systems.</p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold text-green-700 mb-3">India's First E-Waste Eco Park</h3>
+                        <p class="mb-4">The Delhi government is establishing India's first E-Waste Eco Park in Holambi Kalan. This project is a major step towards creating a circular economy and generating green jobs.</p>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center"><span class="font-bold text-green-800 mr-2">📍 Location:</span> North Delhi</li>
+                            <li class="flex items-center"><span class="font-bold text-green-800 mr-2">📐 Area:</span> 11.4 acres</li>
+                            <li class="flex items-center"><span class="font-bold text-green-800 mr-2">⚙️ Capacity:</span> Up to 51,000 tonnes of e-waste annually</li>
+                             <li class="flex items-center"><span class="font-bold text-green-800 mr-2">🤝 Model:</span> Public-Private Partnership (PPP) for 15 years</li>
+                        </ul>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold text-cyan-700 mb-3">'Ayush Nivesh Saarthi' Portal</h3>
+                        <p class="mb-4">The Government of India has launched a digital, investor-centric platform to boost the traditional wellness sector. The portal aims to attract domestic and global investors by providing a single interface for policies, incentives, and projects.</p>
+                        <p class="text-sm text-slate-500">Developed by the Ministry of Ayush and Invest India, it's designed to transform traditional wellness systems into a robust economic driver.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sports Section -->
+            <section id="sports" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Sports: ICC Hall of Fame 2025</h2>
+                <p class="text-slate-600 mb-8 max-w-3xl">This section celebrates the legends of cricket. The International Cricket Council (ICC) has inducted seven new icons into its prestigious Hall of Fame. Click on each player's card to learn more about their remarkable achievements and their place in cricket history.</p>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="hallOfFameGrid">
+                    <!-- Player cards will be injected here by JS -->
+                </div>
+            </section>
+
+             <!-- Defense & Days Section -->
+            <section id="defense" class="mb-16 scroll-mt-20">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Defense & Important Days</h2>
+                <p class="text-slate-600 mb-8 max-w-3xl">Stay updated on key appointments within the Indian Army and recognize important international observances. This section features the new Deputy Chief of Army Staff and highlights the global celebration of the International Day of Play.</p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold text-red-800 mb-3">Lt General Rajiv Ghai Appointed</h3>
+                        <p class="mb-4">Lieutenant General Rajiv Ghai has been appointed as the new <span class="font-semibold">Deputy Chief of Army Staff (Strategy)</span>. He will also continue his role as Director General of Military Operations (DGMO).</p>
+                        <p class="text-sm">A senior officer from the Kumaon Regiment, he was recently awarded the <span class="font-medium text-amber-700">Uttam Yudh Seva Medal (UYSM)</span> for his distinguished service, particularly in counter-insurgency operations in Jammu and Kashmir.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-semibold text-purple-700 mb-3">International Day of Play</h3>
+                        <div class="flex items-center gap-4">
+                            <div class="text-5xl font-bold text-purple-600">11</div>
+                            <div class="text-2xl font-semibold text-purple-800">JUNE</div>
+                        </div>
+                        <p class="mt-3">The world celebrates the International Day of Play, an annual event established by the UN General Assembly to champion the essential role of play in life.</p>
+                        <p class="mt-2 text-sm font-semibold">2025 Theme: <span class="text-purple-800">"Choose Play Every Day"</span></p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="bg-slate-800 text-slate-400 mt-16">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+                <p>&copy; 2025 Interactive Briefing. All information sourced from the 11 June, 2025 Current Affairs report.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // OPD Chart
+            const opdCtx = document.getElementById('opdChart');
+            if(opdCtx) {
+                new Chart(opdCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Online OPD Registration', 'Other'],
+                        datasets: [{
+                            label: 'Registration Rate',
+                            data: [92, 8],
+                            backgroundColor: [
+                                'rgba(59, 130, 246, 0.8)', // blue-500
+                                'rgba(203, 213, 225, 0.5)' // slate-300
+                            ],
+                            borderColor: [
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(203, 213, 225, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#475569' // slate-600
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.raw + '%';
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+
+            // ICC Hall of Fame Data
+            const hallOfFamers = [
+                { name: 'M.S. Dhoni', country: 'India', flag: '🇮🇳', detail: 'He became the 11th Indian cricketer to be named in the ICC Hall of Fame.' },
+                { name: 'Hashim Amla', country: 'South Africa', flag: '🇿🇦', detail: 'A prolific top-order batsman known for his elegant style and record-breaking scores.' },
+                { name: 'Matthew Hayden', country: 'Australia', flag: '🇦🇺', detail: 'A powerful and aggressive opening batsman, key to Australia\'s dominance.' },
+                { name: 'Sana Mir', country: 'Pakistan', flag: '🇵🇰', detail: 'She became the first woman from her country to enter the list. A pioneering captain and bowler.' },
+                { name: 'Graeme Smith', country: 'South Africa', flag: '🇿🇦', detail: 'One of cricket\'s most successful captains, known for his gritty opening batting.' },
+                { name: 'Sarah Taylor', country: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', detail: 'Widely regarded as one of the best wicketkeeper-batters in the history of women\'s cricket.' },
+                { name: 'Daniel Vettori', country: 'New Zealand', flag: '🇳🇿', detail: 'A skillful left-arm spinner and handy lower-order batsman, and former captain.' }
+            ];
+
+            const grid = document.getElementById('hallOfFameGrid');
+            if(grid){
+                grid.innerHTML = hallOfFamers.map(player => `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 cursor-pointer hover:shadow-lg hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-1" data-player="${player.name}">
+                        <div class="flex items-center mb-3">
+                            <span class="text-2xl mr-3">${player.flag}</span>
+                            <div>
+                                <h4 class="font-semibold text-slate-800">${player.name}</h4>
+                                <p class="text-sm text-slate-500">${player.country}</p>
+                            </div>
+                        </div>
+                        <div class="player-detail text-sm text-slate-600 mt-2 border-t border-slate-200 pt-2 hidden">
+                            <p>${player.detail}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Interaction for Hall of Fame cards
+            const cards = document.querySelectorAll('[data-player]');
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const detail = card.querySelector('.player-detail');
+                    detail.classList.toggle('hidden');
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
